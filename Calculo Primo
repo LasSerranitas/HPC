@@ -1,0 +1,139 @@
+package cl.ucn.disc.hpc.test;
+
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Main {
+
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
+
+
+    /*
+   46s
+   41s
+     */
+    public static void main(String[] args) throws InterruptedException {
+
+        log.debug("Empezando");
+        int tiempo = 120;
+        int hilos = 1;
+
+        final StopWatch stopWatch = StopWatch.createStarted();
+        final ExecutorService executorService = Executors.newFixedThreadPool(hilos);
+
+        for (long i = 2; i <= 25000000; i++) {
+            executorService.submit(new HiloPrimo(i));
+        }
+        log.debug("Inicio, analizando hasta 25.000.000");
+        executorService.shutdown();
+        if (executorService.awaitTermination(tiempo, TimeUnit.MINUTES)) {
+            log.debug("Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+
+        } else {
+            log.info("Proceso incompleto || Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+            System.exit(0);
+        }
+        final ExecutorService executorService2 = Executors.newFixedThreadPool(hilos);
+        for (long i = 25000001; i <= 50000000; i++) {
+            executorService2.submit(new HiloPrimo(i));
+        }
+        log.debug("Inicio, analizando hasta 50.000.000");
+        executorService2.shutdown();
+        if (executorService2.awaitTermination(tiempo, TimeUnit.MINUTES)) {
+            log.debug("Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+
+        } else {
+            log.info("Proceso incompleto || Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+            System.exit(0);
+        }
+        final ExecutorService executorService3 = Executors.newFixedThreadPool(hilos);
+        for (long i = 50000001; i <= 75000000; i++) {
+            executorService3.submit(new HiloPrimo(i));
+        }
+        log.debug("Inicio, analizando hasta 75.000.000");
+        executorService3.shutdown();
+        if (executorService3.awaitTermination(tiempo, TimeUnit.MINUTES)) {
+            log.debug("Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+
+        } else {
+            log.info("Proceso incompleto || Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+            System.exit(0);
+        }
+        final ExecutorService executorService4 = Executors.newFixedThreadPool(hilos);
+        for (long i = 75000001; i <= 100000000; i++) {
+            executorService4.submit(new HiloPrimo(i));
+        }
+        log.debug("Inicio, analizando hasta 100.000.000");
+        executorService4.shutdown();
+        if (executorService4.awaitTermination(tiempo, TimeUnit.MINUTES)) {
+            log.debug("Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+
+        } else {
+            log.info("Proceso incompleto || Numeros analizados: {} Primos Encontrados: {} en {}.", HiloPrimo.getAnalizados(), HiloPrimo.getContador(), stopWatch);
+            System.exit(0);
+        }
+
+
+    }
+
+    private static class HiloPrimo implements Runnable {
+
+        private long numero;
+
+
+        public HiloPrimo(final long numero) {
+            this.numero = numero;
+        }
+
+        private final static AtomicInteger contador = new AtomicInteger(0);
+        private final static AtomicInteger analizados = new AtomicInteger(0);
+
+        private static boolean isPrime(final long n) {
+            if (n < 0) {
+                throw  new IllegalArgumentException("No se pueden procesar numeros negativos");
+            }
+            if(n==1){
+                return false;
+            }
+            for (long i = 2; i <= (n / 4) + 1; i++) {
+                if ((n % i) == 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /**
+         * Corre HiloPrimo y verifica si es primo
+         */
+        @Override
+        public void run() {
+            analizados.getAndIncrement();
+            if (isPrime(this.numero)) {
+
+                contador.getAndIncrement();
+            }
+
+        }
+
+        public static int getContador() {
+            return contador.get();
+        }
+
+        public static int getAnalizados() {
+            return analizados.get();
+        }
+
+    }
+
+}
+
+
+
+
