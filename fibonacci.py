@@ -14,7 +14,8 @@ def fib(num):
         return str(int(fib(num - 2)) + int(fib(num - 1)))
 
 
-def factorize(number):
+def factorize(number,d):
+    print('{} : {} = '.format(d, number), end='')
     if number == '0':
         print(' {} '.format(number), end='')
     if number == '1':
@@ -62,8 +63,6 @@ if __name__ == '__main__':
     #freeze_support()
     pool = mp.Pool(mp.cpu_count())
     for i in range(300):
-        a = fib(i)
-        print('{} : {} = '.format(i, a), end='')
-        pool.apply_async(factorize(a))
+        pool.apply_async(factorize(fib(i),i))
     pool.close()
     pool.join()
